@@ -52,7 +52,7 @@ const createParticle = (leftP, topP, golden) => {
 
 const pop = () => {
     const audio = new Audio();
-    audio.src = "./bubble-docs/pop.m4a";
+    audio.src = "./bubble-docs/pop.mp3";
     audio.play();
 };
 
@@ -77,8 +77,6 @@ document.addEventListener('click', (event) => {
             createParticle(layerX, layerY, true);
         }
         document.querySelector('h1').textContent = counter;
-
-
     } else if (bubble) {
         pop();
         counter++;
@@ -89,7 +87,6 @@ document.addEventListener('click', (event) => {
         }
         document.querySelector('h1').textContent = counter;
     }
-
 
 });
 
@@ -102,10 +99,16 @@ if (window.localStorage.previousBestScore) {
 }
 
 // New message every time, took from this json
-let pepTalk = [];
+let notReallyPepTalk = [];
 fetch('anti-pep-talk.json')
     .then((response) => response.json())
-    .then((data) => pepTalk = data.pep)
+    .then((data) => notReallyPepTalk = data.pep);
+
+let pepTalk = [];
+fetch('pep-talk.json')
+    .then((response) => response.json())
+    .then((data) => pepTalk = data.pep);
+
 
 // Range speed Handler
 // =====================================================
@@ -117,13 +120,13 @@ rangeSettings = range.value;
 
 range.addEventListener('input', (e) => {
     if (range.value == 1) {
-        rangeInstructions.textContent = "Slow"
+        rangeInstructions.textContent = "Lent"
     } else if (range.value == 2) {
-        rangeInstructions.textContent = "Not that slow"
+        rangeInstructions.textContent = "Normal"
     } else if (range.value == 3) {
-        rangeInstructions.textContent = "Quite fast"
+        rangeInstructions.textContent = "Rapide"
     } else {
-        rangeInstructions.textContent = "Sonic speed!!"
+        rangeInstructions.textContent = "Vitesse lumière!!"
     }
     rangeSettings = range.value;
 });
@@ -151,7 +154,6 @@ const party = () => {
     confettis.addEventListener('animationend', () => {
         confettis.remove();
     });
-
 };
 
 // Create bubble, will be call later into a loop of 200ms
@@ -215,7 +217,7 @@ const bubbleAnim = function (bubble, golden) {
         bubble.style.setProperty('--leftToAnim', "50%");
         bubble.style.width = randomHeightWidth - 60 + "px";
         bubble.style.height = randomHeightWidth - 60 + "px";
-        
+
     } else {
         if (smollBubbles) {
             randomHeightWidth = (Math.floor(Math.random() * 100) + 50);
@@ -251,29 +253,38 @@ const endGame = function () {
         element.classList.remove('hidden')
     });
 
+    const victory = () => {
+        const audio = new Audio();
+        audio.src = "./bubble-docs/party-horn.mp3";
+        audio.play();
+    };
+
+    const lol = () => {
+        const audio = new Audio();
+        audio.src = "./bubble-docs/lol.mp3";
+        audio.play();
+    };
+
     if (bestScore.textContent < counter) {
+        victory();
         bestScore.textContent = counter;
         window.localStorage.previousBestScore = counter;
-
-        const randomIndex = Math.floor(Math.random() * pepTalk.length)
+        const randomIndex = Math.floor(Math.random() * pepTalk.length);
         document.querySelector('label').textContent = pepTalk[randomIndex];
+
+    } else {
+        lol();
+        const randomIndex = Math.floor(Math.random() * notReallyPepTalk.length);
+        document.querySelector('label').textContent = notReallyPepTalk[randomIndex];
     }
 
-    // easter egg
-    // const victory = () => {
-    //     const audio = new Audio();
-    //     audio.src = "./bubble-docs/Party-horn.mp3";
-    //     audio.play();
-    // };
-
-    // victory();
 
     // Quantity of particles at the end
     for (let i = 0; i < 60; i++) {
         party()
     }
 
-    document.getElementById('encouragingDisplay').textContent = pepTalk[Math.floor(Math.random() * pepTalk.length)]
+    // document.getElementById('encouragingDisplay').textContent = notReallyPepTalk[Math.floor(Math.random() * notReallyPepTalk.length)]
 }
 
 // Onclick button "go" event listener
@@ -289,11 +300,11 @@ const startGame = function () {
 
     setTimeout(() => {
         endGameTrigger = false;
-    }, 30000)
+    }, 5000)
 
     setTimeout(() => {
         bubblesMaker(true);
-    }, Math.ceil(Math.random() * 30000))
+    }, Math.ceil(Math.random() * 26000))
 
     const loop = () => {
         if (endGameTrigger === true) {
